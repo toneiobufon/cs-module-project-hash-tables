@@ -24,6 +24,8 @@ class HashTable:
 
         # Your code here
         self.capacity = capacity
+        self.size = 0
+        self.contents = [None]*capacity
 
 
     def get_num_slots(self):
@@ -37,6 +39,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        pass
 
 
     def get_load_factor(self):
@@ -46,6 +49,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        pass
 
 
     def fnv1(self, key):
@@ -56,6 +60,15 @@ class HashTable:
         """
 
         # Your code here
+        FNV_prime = 0x100000001b3 
+        offset_basis = 0xcbf29ce484222325
+
+        hash = offset_basis
+        for k in key:
+            # This is the "clamping" part
+            hash = hash * FNV_prime
+            hash = hash ^ ord(k)
+        return hash
 
 
     def djb2(self, key):
@@ -65,6 +78,11 @@ class HashTable:
         Implement this, and/or FNV-1.
         """
         # Your code here
+        hash = 5381
+        for n in key:
+            hash = (hash * 33) + ord(n)
+        return hash
+
 
 
     def hash_index(self, key):
@@ -72,7 +90,8 @@ class HashTable:
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
+        return self.fnv1(key) % self.capacity
+        
         return self.djb2(key) % self.capacity
 
     def put(self, key, value):
@@ -84,6 +103,10 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        newNode = HashTableEntry(key, value)
+        newIndex = self.hash_index(key)
+        self.contents[newIndex] = newNode
+        self.size +=1
 
 
     def delete(self, key):
@@ -95,6 +118,10 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        indexOfKey = self.hash_index(key)
+        deleted = self.contents[indexOfKey]
+        self.contents[indexOfKey] = None
+        return deleted
 
 
     def get(self, key):
@@ -106,6 +133,14 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        lookup = self.hash_index(key)
+
+        if self.size == 0:
+            return None
+        if self.contents[lookup] is None:
+            return None
+        else:
+            return self.contents[lookup].value
 
 
     def resize(self, new_capacity):
@@ -116,6 +151,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        pass
 
 
 
