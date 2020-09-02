@@ -39,7 +39,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        pass
+        return self.capacity
 
 
     def get_load_factor(self):
@@ -49,7 +49,9 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        pass
+        lofactor = self.size/self.capacity
+        
+        return lofactor
 
 
     def fnv1(self, key):
@@ -103,10 +105,43 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        newNode = HashTableEntry(key, value)
-        newIndex = self.hash_index(key)
-        self.contents[newIndex] = newNode
-        self.size +=1
+        #day one
+        # newNode = HashTableEntry(key, value)
+        # newIndex = self.hash_index(key)
+        # self.contents[newIndex] = newNode
+        # self.size +=1
+
+        #day two, to avoid collision
+       
+        keyIndex = self.hash_index(key)
+
+        if self.contents[keyIndex] is None:
+
+            newNode = HashTableEntry(key, value)
+            newIndex = self.hash_index(key)
+            self.contents[newIndex] = newNode
+
+            newNode.next = None
+            self.size +=1
+
+        curNode = self.contents[keyIndex]
+        while curNode:
+            if curNode.key == key:
+                curNode.value = value
+            else:
+                oldHead = curNode
+                newNode = HashTableEntry(key, value)
+                self.contents[keyIndex] = newNode
+                newNode.next = oldHead
+                self.size +=1
+            curNode = curNode.next
+
+        #increase size if bigger than 0.7    
+        if self.get_load_factor() > 0.7:
+            newLimit = self.capacity*2
+            self.resize(newLimit)
+
+
 
 
     def delete(self, key):
@@ -118,10 +153,39 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        #day one
+        # indexOfKey = self.hash_index(key)
+        # deleted = self.contents[indexOfKey]
+        # self.contents[indexOfKey] = None
+        # return deleted
+
+        #day two, to avoid collision
         indexOfKey = self.hash_index(key)
-        deleted = self.contents[indexOfKey]
-        self.contents[indexOfKey] = None
-        return deleted
+
+        if self.contents[indexOfKey] is None:
+            return None
+        if self.contents[indexOfKey].key == key:
+            self.size -=1
+            self.contents[indexOfKey] = self.contents[indexOfKey].next
+            return key
+        else:
+            if self.contents[indexOfKey].next is None:
+                return None
+            prevNode = None
+            curNode = self.contents[indexOfKey]
+
+            while curNode:
+                if curNode.key == key:
+                    prevNode.next = curNode.next
+                    self.size -=1
+                    return key
+                
+                prevNode = curNode
+                curNode = curNode.next
+
+
+
+
 
 
     def get(self, key):
@@ -133,14 +197,34 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        #day one
+        # lookup = self.hash_index(key)
+
+        # if self.size == 0:
+        #     return None
+        # if self.contents[lookup] is None:
+        #     return None
+        # else:
+        #     return self.contents[lookup].value
+
+        #day two, to avoid collision
         lookup = self.hash_index(key)
+        curNode = self.contents[lookup]
 
         if self.size == 0:
             return None
+        
         if self.contents[lookup] is None:
             return None
-        else:
-            return self.contents[lookup].value
+        
+        while curNode is not None:
+            if curNode.key == key:
+                return curNode.value
+            curNode = curNode.next
+
+
+            
+
 
 
     def resize(self, new_capacity):
