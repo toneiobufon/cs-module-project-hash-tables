@@ -90,8 +90,8 @@ class HashTable:
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        return self.fnv1(key) % self.capacity
-        
+        # return self.fnv1(key) % self.capacity
+
         return self.djb2(key) % self.capacity
 
     def put(self, key, value):
@@ -151,7 +151,27 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        pass
+        #hash table refers to new array
+        self.capacity = new_capacity
+        # new arra with double the capacity of old array
+        oldList = [None]* self.capacity
+
+        self.contents = self.contents + oldList
+
+        for i in range(self.capacity):
+            entry = self.contents[i]
+
+            if entry is not None:
+                curNode = self.contents[i]
+
+                while curNode:
+                    self.delete(self.contents[i].key)
+
+                    self.put(curNode.key, curNode.value)
+                    curNode = curNode.next
+                    
+
+
 
 
 
